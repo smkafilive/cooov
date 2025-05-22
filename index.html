@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cover Page Maker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #f3f3f3;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    h2 {
+      text-align: center;
+    }
+    input, button {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+    }
+    .cover {
+      text-align: center;
+      border: 2px solid black;
+      padding: 30px;
+      margin-top: 30px;
+      background: white;
+    }
+    .logo {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    #downloadBtn {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Cover Page Maker</h2>
+    <input type="text" id="name" placeholder="Your Name" />
+    <input type="text" id="institute" placeholder="Institute Name" />
+    <input type="text" id="course" placeholder="Course Name" />
+    <input type="text" id="code" placeholder="Course Code" />
+    <input type="date" id="date" />
+    <input type="file" id="logoInput" accept="image/*" />
+    <button onclick="generate()">Generate Cover Page</button>
+    <div id="coverPage" class="cover" style="display:none;"></div>
+    <button id="downloadBtn" onclick="downloadPDF()" style="display:none;">Download as PDF</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script>
+    function generate() {
+      const name = document.getElementById('name').value;
+      const inst = document.getElementById('institute').value;
+      const course = document.getElementById('course').value;
+      const code = document.getElementById('code').value;
+      const date = document.getElementById('date').value;
+      const logoInput = document.getElementById('logoInput');
+      const coverPage = document.getElementById('coverPage');
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+        coverPage.innerHTML = \`
+          <img src="\${e.target.result}" class="logo" alt="Logo"/>
+          <h1>\${inst}</h1>
+          <h2>\${course} (\${code})</h2>
+          <h3>Submitted by: \${name}</h3>
+          <h3>Date: \${date}</h3>
+        \`;
+        coverPage.style.display = 'block';
+        document.getElementById('downloadBtn').style.display = 'block';
+      };
+
+      if (logoInput.files.length > 0) {
+        reader.readAsDataURL(logoInput.files[0]);
+      } else {
+        coverPage.innerHTML = \`
+          <h1>\${inst}</h1>
+          <h2>\${course} (\${code})</h2>
+          <h3>Submitted by: \${name}</h3>
+          <h3>Date: \${date}</h3>
+        \`;
+        coverPage.style.display = 'block';
+        document.getElementById('downloadBtn').style.display = 'block';
+      }
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('coverPage');
+      html2pdf().from(element).save('cover_page.pdf');
+    }
+  </script>
+</body>
+</html>
